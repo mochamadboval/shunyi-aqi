@@ -5,15 +5,25 @@ import streamlit as st
 import os
 
 aqi_df = pd.read_csv(os.path.join(os.path.dirname(__file__), "main_data.csv"))
-aqi_2016 = aqi_df[aqi_df["year"] == 2016]
+year = 2016
 
-st.header("Shunyi AQI by Mochamad Boval")
+with st.sidebar:
+  st.header("Shunyi AQI by Mochamad Boval")
+  
+  year = st.selectbox(
+    label="Lihat berdasarkan tahun:",
+    options=(2013, 2014, 2015, 2016, 2017),
+    index=3
+  )
 
-st.subheader("Rata-rata PM2.5 dan PM10 per bulan (2016)")
+aqi_by_year = aqi_df[aqi_df["year"] == year]
+
+
+st.subheader(f"Rata-rata PM2.5 dan PM10 per bulan ({year})")
 col_1, col_2 = st.columns(2)
 
 with col_1:
-  PM2_by_month = round(aqi_2016.groupby("month")["PM2.5"].mean(), 1).reset_index()
+  PM2_by_month = round(aqi_by_year.groupby("month")["PM2.5"].mean(), 1).reset_index()
 
   fig, ax = plt.subplots(figsize=(10, 5))
   ax.plot(
@@ -30,7 +40,7 @@ with col_1:
   st.pyplot(fig)
 
 with col_2:
-  PM10_by_month = round(aqi_2016.groupby("month").PM10.mean(), 1).reset_index()
+  PM10_by_month = round(aqi_by_year.groupby("month").PM10.mean(), 1).reset_index()
 
   fig, ax = plt.subplots(figsize=(10, 5))
   ax.plot(
@@ -46,9 +56,9 @@ with col_2:
   
   st.pyplot(fig)
 
-st.subheader("Rata-rata PM2.5 dan PM10 per tanggal (2016)")
+st.subheader(f"Rata-rata PM2.5 dan PM10 per tanggal ({year})")
 
-PM2_by_day = round(aqi_2016.groupby("day")["PM2.5"].mean(), 1).reset_index()
+PM2_by_day = round(aqi_by_year.groupby("day")["PM2.5"].mean(), 1).reset_index()
 
 fig, ax = plt.subplots(figsize=(12, 6))
 ax = sns.barplot(
@@ -67,7 +77,7 @@ ax.tick_params(axis="x", labelsize=12)
 
 st.pyplot(fig)
 
-PM10_by_day = round(aqi_2016.groupby("day").PM10.mean(), 1).reset_index()
+PM10_by_day = round(aqi_by_year.groupby("day").PM10.mean(), 1).reset_index()
 
 fig, ax = plt.subplots(figsize=(12, 6))
 ax = sns.barplot(
